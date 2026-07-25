@@ -1,14 +1,9 @@
 # Exportaciones del Norte Argentino — Análisis Chaco
-
-Análisis de la evolución de las exportaciones agroindustriales del Chaco (2023–2026),
-con foco en determinar si el primer semestre de 2026 representa un pico histórico
-de producción y actividad logística hacia los puertos de Rosario.
-
 ## Objetivo general
 
-Analizar la evolución de las exportaciones agroindustriales del norte del Chaco
-(2023–2026) para identificar si el primer semestre de 2026 representa un pico
-histórico de producción y actividad logística hacia los puertos de Rosario.
+Analizar la evolución de las exportaciones agroindustriales de Chaco (2023–2026)
+para identificar si el primer semestre de 2026 representa un pico histórico
+de producción y actividad logística hacia los puertos de Rosario.
 
 ## Objetivos específicos
 
