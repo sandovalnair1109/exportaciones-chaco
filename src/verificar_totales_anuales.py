@@ -27,16 +27,23 @@ for i in range (len(df)):
     if str(df.iat[i,1]).strip()=="Chaco":
         fila = df.iloc[i]
         
-        # Asumimos estructura: col 0 = índice/orden, col 1 = Provincia,
-        # col 2 en adelante = años 2022, 2023, 2024, 2025...
-        años = list(range(2022, 2022 + len(fila) - 2))
-        valores = fila.iloc[2:].values
+        # Estructura REAL confirmada de esta hoja (verificado corriendo el
+        # script y comparando contra el PDF del informe técnico OPEX):
+        # col 0 = vacío, col 1 = Provincia,
+        # col 2 a 5 = años 2022, 2023, 2024, 2025 (en millones de USD FOB)
+        # col 6 = variación % 2025 vs 2024
+        # col 7 = variación % 2025 vs 2022
+        # NO son años 2026/2027 — son columnas de variación porcentual.
+        años = [2022, 2023, 2024, 2025]
+        valores_anuales = fila.iloc[2:6].values
+        variacion_vs_2024 = fila.iloc[6]
+        variacion_vs_2022 = fila.iloc[7]
         
         print(f"\nFila índice {i} en el Excel:\n")
         print(f"{'Año':<10} {'Valor (miles USD FOB)':>25}")
         print("-" * 38)
         
-        for año, valor in zip(años, valores):
+        for año, valor in zip(años, valores_anuales):
             if pd.isna(valor):
                 val_str = "—"
             else:
@@ -45,7 +52,11 @@ for i in range (len(df)):
             # Destacamos 2024 porque es el que vamos a comparar con microdatos
             marca = "  ← COMPARAR CON MICRODATOS 2024" if año == 2024 else ""
             print(f"{año:<10} {val_str}{marca}")
-        
+
+        print()
+        print(f"Variación % 2025 vs 2024: {variacion_vs_2024:+.2f}%")
+        print(f"Variación % 2025 vs 2022: {variacion_vs_2022:+.2f}%")
+
         encontrado = True
         break
 
