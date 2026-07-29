@@ -3,13 +3,15 @@ explorar_excel.py
 
 Los Excel del INDEC suelen tener varias hojas, filas de título antes del
 encabezado real, celdas combinadas, etc. Este módulo sirve para MIRAR antes
-de filtrar a ciegas: lista las hojas disponibles y busca en qué fila/columna
-aparece un texto (por ejemplo "Chaco" o "Provincia"), para saber exactamente
-dónde está la tabla real dentro del archivo.
+de filtrar a ciegas.
 
-Uso desde la terminal:
+Uso desde terminal:
     python src/explorar_excel.py data/raw/opex_2025_semestre1.xls
     python src/explorar_excel.py data/raw/opex_2025_semestre1.xls --buscar Chaco
+
+Uso desde notebook:
+    from src.explorar_excel import explorar
+    explorar("data/raw/opex_anexo_cuadros_10_03_26.xls", buscar="Chaco")
 """
 
 from __future__ import annotations
@@ -32,9 +34,6 @@ def resumen_hojas(path: str | Path) -> None:
     print(f"El archivo tiene {len(hojas)} hoja(s): {hojas}\n")
 
     for hoja in hojas:
-        # header=None: leemos todo tal cual viene, sin asumir dónde está
-        # el encabezado real, porque en los archivos de INDEC casi nunca
-        # es la primera fila.
         df = pd.read_excel(path, sheet_name=hoja, header=None)
         print("=" * 60)
         print(f"Hoja: {hoja} — {df.shape[0]} filas x {df.shape[1]} columnas")
@@ -47,9 +46,6 @@ def buscar_texto_en_archivo(path: str | Path, texto: str) -> list[tuple[str, int
     """
     Busca un texto (ej. 'Chaco') en todas las celdas de todas las hojas.
     Devuelve una lista de coincidencias: (hoja, fila, columna, valor_celda).
-
-    Esto sirve para ubicar exactamente dónde está la fila/columna de Chaco
-    antes de armar el filtro definitivo, en vez de adivinar.
     """
     coincidencias = []
     for hoja in listar_hojas(path):
@@ -70,9 +66,35 @@ def buscar_texto_en_archivo(path: str | Path, texto: str) -> list[tuple[str, int
     return coincidencias
 
 
+def explorar(archivo: str | Path, buscar: str | None = None) -> None:
+    """
+    Función principal para uso interactivo (notebook o terminal).
+    
+    Args:
+        archivo: ruta al archivo Excel (relativa a la raíz del proyecto)
+        buscar: texto opcional para buscar en las celdas
+    """
+    path = Path(archivo)
+    if not path.exists():
+        print(f"❌ No se encontró el archivo: {path}")
+        return
+
+    print(f"📁 Explorando: {path.name}\n")
+
+    resumen_hojas(path)
+
+    if buscar:
+        print(f"🔍 Buscando '{buscar}'...\n")
+        buscar_texto_en_archivo(path, buscar)
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Uso: python src/explorar_excel.py <ruta_archivo> [--buscar TEXTO]")
+        print("Uso desde terminal:")
+        print("  python src/explorar_excel.py <ruta_archivo> [--buscar TEXTO]")
+        print("\nUso desde notebook:")
+        print("  from src.explorar_excel import explorar")
+        print("  explorar('data/raw/archivo.xls', buscar='Chaco')")
         sys.exit(1)
 
     ruta = sys.argv[1]
@@ -80,6 +102,6 @@ if __name__ == "__main__":
     if "--buscar" in sys.argv:
         idx = sys.argv.index("--buscar")
         texto_buscado = sys.argv[idx + 1]
-        buscar_texto_en_archivo(ruta, texto_buscado)
+        explorar(ruta, buscar=texto_buscado)
     else:
-        resumen_hojas(ruta)
+        explorar(ruta)
