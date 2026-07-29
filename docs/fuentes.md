@@ -1,11 +1,14 @@
 # Fuentes de datos — qué buscar y para qué
 
-## 1. INDEC — Intercambio Comercial Argentino (ICA)
-- **Buscar:** anexo/Excel de "Exportaciones según provincia de origen" (mensual y acumulado).
-- **Para qué:** serie temporal principal, Chaco, 2023-2026.
-- **Objetivo:** #1 (evolución) y #4 (proyección).
-- **Ojo:** desde 2018 el desglose provincial puede venir agregado en algunos meses
-  por secreto estadístico. Documentar huecos, no asumir que son error propio.
+## 1. INDEC — dos sistemas distintos, no confundir (ver hallazgo más abajo)
+- **Buscar:** dentro de `comex.indec.gob.ar`, el archivo `Serie_Opex_Mensual_AAAA_AAAA.xlsx`
+  (serie mensual, todas las provincias) — **esta es la fuente principal del proyecto**.
+  No usar el archivo `Datos_Origen_AAAA...xlsx` del mismo sistema como fuente
+  principal: mide algo distinto (ver hallazgo metodológico).
+- **Para qué:** serie temporal principal, Chaco, 2002-2026, mensual.
+- **Objetivo:** #1 (evolución), #2 (estacionalidad) y #4 (composición por rubro).
+- **Validado:** contra la hoja `Region-país 2015-2025 semestre` del informe
+  técnico OPEX — coincide exactamente para 2021-2025. Ver `docs/inventario_datasets.md`.
 
 ## 2. Bolsa de Comercio de Rosario (BCR)
 - **Buscar:** informes semanales de embarques desde el Gran Rosario, por origen si está disponible.
@@ -22,7 +25,17 @@
 - **Para qué:** contexto de producción física, respalda la proyección.
 - **Objetivo:** soporte del objetivo #4.
 
-## 5. Datos propios (papá / logística)
+## 5. BCRA — ITCRM (Índice de Tipo de Cambio Real Multilateral)
+- **Buscar:** serie ITCRM en el sitio del BCRA, descarga directa en Excel.
+- **Para qué:** aislar el efecto del tipo de cambio real sobre el precio
+  implícito de Chaco (¿la caída 2022-2024 fue por precio internacional o por
+  apreciación cambiaria?).
+- **Objetivo:** #4 (causas del descenso/recuperación), punto 4.5.
+- **Nota técnica:** viene en frecuencia diaria — promediar a mensual
+  (`resample('MS').mean()`) antes de unir con la serie de Chaco.
+- **Estado:** pendiente de descargar.
+
+## 6. Datos propios (papá / logística)
 - **Buscar:** camiones despachados por mes (2023-2026), meses con/sin actividad.
 - **Para qué:** dato exclusivo, valida los datos agregados oficiales "en la calle".
 - **Objetivo:** #3 (cruce con logística) — es el diferencial del proyecto.
@@ -71,10 +84,8 @@ CAME/Coninagro, la decisión es:
   Chaco tiene peso menor; no aporta valor específico que CAME/Coninagro
   ya no den mejor para las economías regionales del NEA.
 
-| Fuente | Período cubierto | Nivel de detalle | Huecos encontrados |
-|---|---|---|---|
-| INDEC | | | |
-| BCR | | | |
-| Min. Economía | | | |
-| Bolsa Cereales | | | |
-| Datos propios | | | |
+## Registro de avance por fuente
+
+El detalle de cobertura, estructura y validación de cada archivo ya descargado
+se lleva en `docs/inventario_datasets.md` (se actualiza por archivo, no acá,
+para no duplicar información en dos lugares).
