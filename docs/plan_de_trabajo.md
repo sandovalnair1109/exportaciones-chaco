@@ -13,31 +13,66 @@
 
 ---
 
-## Fase 0 — Preparación (ya hecho)
+## Fase 0 — Preparación (COMPLETA)
 
 - **0.1.** Definir objetivo general y objetivos específicos del proyecto.
 - **0.2.** Armar estructura de repositorio (`data/`, `src/`, `docs/`, `tests/`, `notebooks/`).
+- **0.2.bis (agregado, orden real corregido)** Crear y activar el entorno
+  virtual **antes** de instalar cualquier dependencia. Hacerlo después (como
+  pasó acá) desincroniza `requirements.txt` con lo que realmente está
+  instalado — sin gravedad, pero es la lección operativa más simple de este
+  proyecto y vale la pena dejarla escrita.
 - **0.3.** Conectar el repo a GitHub.
 - **0.4.** Escribir script de descarga con validación (`descarga.py`) + tests.
 - **0.5.** Escribir script de exploración de Excel (`explorar_excel.py`).
 - **0.6.** Escribir script de filtrado por provincia (`filtrar_provincia.py`).
 - **0.7.** Identificar y descargar la fuente principal (`Serie_Opex_Mensual_2002_2026.xlsx`).
-- **0.8.** Validar que la fuente principal usa la misma metodología que el informe oficial OPEX (comparación de totales anuales).
+- **0.8. (detallado en pasos reales, ver `notebooks/`)** Validar metodología:
+  - `analizar_microdatos_chaco_2024.py` → exploración inicial de un archivo
+    candidato (`Datos_origen_2024_mayo_2025.xlsx`).
+  - `verificar_totales_anuales.py` → extraer el total oficial 2022-2025 de
+    `opex_anexo_cuadros_10_03_26.xls`.
+  - `comparar_discrepancias_2024.py` → comparó ambos y encontró 86,2% de
+    discrepancia → decisión: descartar `Datos_origen...` como fuente
+    principal, usar `Serie_Opex_Mensual` (ver hallazgo en `docs/fuentes.md`).
+  - `verificar_primer_semestre.py` → construyó la serie de primer semestre
+    2002-2026 desde `Serie_Opex_Mensual` y la comparó contra la hoja oficial
+    `Region-país 2015-2025 semestre` — coincide exactamente en 2021-2025.
 - **0.9.** Filtrar Chaco de la fuente principal → `chaco_serie_mensual_2002_2026.csv` (884 filas).
+- **0.9.bis (nuevo)** `validar_dataset_procesado.py` (notebook
+  `validacion_dataset_procesado.ipynb`): último chequeo, esta vez sobre
+  el **archivo procesado** (no la fuente) — confirma que el filtro no perdió
+  ni duplicó filas, que `Nombre Prov` contiene únicamente "Chaco", y que no
+  hay nulos. Reutiliza `chequeo_valores_faltantes`/`chequeo_duplicados` de
+  `data_quality.py` en vez de reimplementarlos.
 - **0.10.** Documentar el inventario de datasets (`docs/inventario_datasets.md`).
 - **0.11.** Documentar la discrepancia metodológica entre fuentes (`docs/fuentes.md`).
 - **0.12.** Crear `docs/matriz_de_citas.md`: tabla con `Cifra | Nivel geográfico
   | Período exacto | Fuente + URL | Fecha de consulta | Usada en objetivo #`.
   Cada cifra externa (no de tu propia serie filtrada) se registra ahí ANTES
   de usarse en cualquier gráfico o conclusión.
+- **0.13. (nuevo, recomendado)** Guardar la reflexión "camino real vs. camino
+  ideal" como `docs/leccion_aprendida_metodologia.md` — documenta que el
+  orden correcto es *validar antes de adoptar una fuente*, no al revés. Útil
+  para la narrativa de la PPS, no solo como nota interna.
+
+**Secuencia real de los notebooks de validación (para referencia):**
+`analisis_exploratorio_chaco_2024.ipynb` → `verificacion_datos_oficiales.ipynb`
+→ `analisis_discrepancias_2024.ipynb` → `verificacion_primer_semestre.ipynb`
+→ `paso5_validacion_dataset_procesado.ipynb`.
 
 ---
 
 ## Fase 1 — Objetivo específico #1: Cuantificar la evolución mensual (USD y toneladas)
 
 - **1.1.** Cargar `chaco_serie_mensual_2002_2026.csv` con pandas en un notebook nuevo.
-- **1.2.** Correr `data_quality.py` sobre este CSV: chequear nulos, duplicados y huecos temporales.
-- **1.3.** Crear una columna de fecha real (`Año` + `Mes` → tipo `datetime`) para poder ordenar y graficar correctamente.
+- **1.2. (corregido)** Correr `src/chequeo_calidad_chaco.py` (wrapper de
+  `data_quality.py` con los parámetros correctos para Chaco — ver nota en
+  `docs/inventario_datasets.md`). Este script ya arma una columna de fecha
+  **temporal, solo en memoria**, para poder chequear huecos, sin adelantar
+  la persistencia formal del paso 1.3.
+- **1.3.** Crear la columna de fecha real (`Año` + `Mes` → tipo `datetime`)
+  **de forma persistente esta vez**, para poder ordenar y graficar correctamente.
 - **1.4.** Agrupar por fecha y sumar `FOB_dólar` y `Peso neto` → serie mensual total de Chaco (sin distinguir rubro).
 - **1.5.** Graficar la serie completa 2002-2026 en USD (línea de tiempo).
 - **1.6.** Graficar la misma serie en toneladas, al lado o debajo del gráfico anterior.
