@@ -57,3 +57,32 @@ sirve en el proyecto. Se actualiza a mano cada vez que se agrega un archivo nuev
 ## Explicativo_base_anual_OPEX.docx / Leame_exportaciones.docx
 
 - Documentación metodológica del INDEC, no son datos.
+
+## data/processed/chaco_serie_mensual_2002_2026.csv ⭐ DATASET DE TRABAJO (Fase 1 en adelante)
+
+- **Origen:** resultado de aplicar `filtrar_provincia.py` sobre `Serie_Opex_Mensual_2002_2026.xlsx`.
+- **Cobertura:** 2002 a junio 2026, mensual, solo Chaco. 884 filas, sin nulos, sin duplicados.
+- **Columnas:** Año, Mes, FOB_dólar, Peso neto, Nombre Prov, Nombre_Región, Rubro.
+- **Validado:**
+  - Estructura y completitud: `src/validar_dataset_procesado.py` (notebook `paso5_validacion_dataset_procesado.ipynb`).
+  - Coincidencia exacta con la serie oficial de primer semestre de INDEC
+    (hoja `Region-país 2015-2025 semestre` del anexo OPEX), para los 5 años
+    donde ambas series se solapan (2021-2025) — validación cruzada, no solo
+    interna.
+- **A partir de este archivo se construye todo el análisis de las Fases 1 a 4.**
+  No se vuelve a tocar `Serie_Opex_Mensual_2002_2026.xlsx` directamente salvo
+  para volver a filtrar si hiciera falta otra provincia de comparación.
+
+## Nota sobre data_quality.py y su wrapper
+
+`data_quality.py` es una **librería genérica** de funciones de chequeo
+(nulos, duplicados, huecos temporales) — no está pensada para correrse sola
+con `%run` desde un notebook (espera un argumento de línea de comandos).
+Para Chaco específicamente, se usa a través de dos wrappers que sí siguen el
+patrón del proyecto (ruta hardcodeada, `%run` sin argumentos):
+
+- `src/chequeo_calidad_chaco.py` (Fase 1.2) — nulos, duplicados por clave
+  `Año/Mes/Rubro`, y huecos temporales (arma una columna de fecha temporal
+  en memoria, ya que el CSV trae `Año`/`Mes` separados).
+- `src/validar_dataset_procesado.py` (Fase 0.9.bis) — validación estructural
+  del archivo procesado (filas esperadas, columnas, provincia única).
