@@ -57,36 +57,69 @@
   para la narrativa de la PPS, no solo como nota interna.
 
 **Secuencia real de los notebooks de validación (para referencia):**
-`analisis_exploratorio_chaco_2024.ipynb` → `verificacion_datos_oficiales.ipynb`
-→ `analisis_discrepancias_2024.ipynb` → `verificacion_primer_semestre.ipynb`
-→ `paso5_validacion_dataset_procesado.ipynb`.
+`explorador_archivos_excel.ipynb` → `analisis_exploratorio_chaco_2024.ipynb`
+→ `verificacion_datos_oficiales.ipynb` → `analisis_discrepancias_2024.ipynb`
+→ `verificacion_primer_semestre.ipynb` → `validacion_dataset_procesado.ipynb`.
 
 ---
 
 ## Fase 1 — Objetivo específico #1: Cuantificar la evolución mensual (USD y toneladas)
 
 - **1.1.** Cargar `chaco_serie_mensual_2002_2026.csv` con pandas en un notebook nuevo.
-- **1.2. (corregido)** Correr `src/chequeo_calidad_chaco.py` (wrapper de
-  `data_quality.py` con los parámetros correctos para Chaco — ver nota en
-  `docs/inventario_datasets.md`). Este script ya arma una columna de fecha
-  **temporal, solo en memoria**, para poder chequear huecos, sin adelantar
-  la persistencia formal del paso 1.3.
-- **1.3.** Crear la columna de fecha real (`Año` + `Mes` → tipo `datetime`)
-  **de forma persistente esta vez**, para poder ordenar y graficar correctamente.
-- **1.4.** Agrupar por fecha y sumar `FOB_dólar` y `Peso neto` → serie mensual total de Chaco (sin distinguir rubro).
+- **1.2. (corregido)** Correr `src/fase1_chequeo_calidad_chaco.py` (wrapper de
+  `data_quality.py` con los parámetros correctos para Chaco — nulos,
+  duplicados por clave `Año/Mes/Rubro`, y huecos temporales). Este script
+  arma una columna de fecha **temporal, solo en memoria**, para poder
+  chequear huecos, sin adelantar la persistencia formal del paso 1.3.
+  **1.1 y 1.2 se consolidaron en un mismo notebook**
+  (`notebooks/fase1_carga_y_chequeo_calidad_chaco.ipynb`), renombrado
+  después de agregar el 1.1 sobre un notebook que originalmente solo
+  tenía el 1.2.
+- **1.3.** Crear la columna de fecha real (`Año` + `Mes` → tipo `datetime`),
+  **de forma persistente esta vez** (a diferencia del 1.2) — script
+  `src/fase1_agregar_columna_fecha.py`, sobreescribe directamente
+  `data/processed/chaco_serie_mensual_2002_2026.csv`. Notebook:
+  `notebooks/fase1_columna_fecha_chaco.ipynb`.
+- **1.4.** Agrupar por fecha y sumar `FOB_dólar` y `Peso neto` → serie
+  mensual total de Chaco (294 meses, sin distinguir rubro). **1.4 a 1.12
+  se concentraron en un solo notebook**
+  (`notebooks/fase1_serie_mensual_chaco.ipynb`), por ser pasos de una
+  misma narrativa (serie → gráficos → variación → tabla anual →
+  conclusión).
 - **1.5.** Graficar la serie completa 2002-2026 en USD (línea de tiempo).
-- **1.6.** Graficar la misma serie en toneladas, al lado o debajo del gráfico anterior.
-- **1.7.** Marcar visualmente en el gráfico los años clave: 2022 (pico previo), 2024 (piso), 2026 (recuperación).
-- **1.8.** Calcular variación % interanual mes a mes (ej. marzo 2026 vs. marzo 2025).
-- **1.9.** Armar una tabla resumen anual (2015-2026) en USD y en toneladas.
-- **1.10. (prioritaria — hacer primero)** Contrastar el total anual 2025 de tu
-  serie mensual contra el total oficial de `opex_anexo_cuadros_10_03_26.xls`
-  — repetir el chequeo puntual para el año más reciente.
-- **1.11.** Crear columna de **acumulado año a fecha** (year-to-date):
-  `groupby(año).cumsum()`. Permite comparar "enero-junio 2026" contra
-  "enero-junio 2025" sin el sesgo de comparar un año incompleto contra uno cerrado.
-- **1.12.** Redactar 3-4 líneas de conclusión parcial.
+  Observación agregada: el pico histórico en USD está cerca de 2011, no
+  de 2022 — coincide con la validación de la Fase 0.
+- **1.6.** Graficar la misma serie en toneladas. Observación agregada:
+  el pico histórico en toneladas está cerca de 2019, no coincide con el
+  pico en USD — indicio temprano de variación en el precio implícito
+  (a cuantificar en Fase 4.1).
+- **1.7.** Marcar visualmente en el gráfico los años clave: 2022 (pico
+  previo), 2024 (piso), 2026 (recuperación). Aclaración agregada: "pico
+  previo" se refiere al período reciente 2022-2025, no al máximo
+  histórico de toda la serie (ver 1.5-1.6).
+- **1.8.** Calcular variación % interanual mes a mes. Hallazgo: racha de
+  7 meses consecutivos (dic-2025 a jun-2026) con variación positiva en
+  USD, con una excepción real en **junio 2026** (toneladas -0,4%, único
+  valor negativo del tramo) — primera aparición de una anomalía que se
+  repite en la Fase 2.
+- **1.9.** Armar tabla resumen anual (2015-2026). Sirvió además como
+  **validación cruzada**: los totales coinciden exactamente con los ya
+  confirmados en la Fase 0 (517/304/216/235/152).
+- **1.10. (prioritaria — hecha primero, como estaba previsto)**
+  Contrastar el total anual 2025 contra el oficial — diferencia de
+  -0,000%, tercera confirmación de que la cadena de procesamiento no
+  introdujo errores.
+- **1.11.** Columna de acumulado año a fecha (`groupby(año).cumsum()`) —
+  permitió la comparación justa que reveló la recuperación real de
+  2026 (+49% USD, +42% toneladas vs. el piso de 2025).
+- **1.12.** Conclusión parcial redactada — con dos afirmaciones
+  corregidas antes de cerrarla (una comparación contra "toda la serie
+  histórica" que en realidad no era el máximo, y una generalización
+  sobre "todos los meses en dos dígitos" que no aplicaba a junio en
+  toneladas). Mismo criterio de verificación que se venía aplicando a
+  fuentes externas, ahora sobre afirmaciones propias.
 
+  **Fase 1 — COMPLETA.**
 ---
 
 ## Fase 2 — Objetivo específico #2: Estacionalidad / continuidad de campaña
@@ -104,6 +137,22 @@
 - **2.7.** Aclarar siempre que 2026 tiene menos meses de datos disponibles
   (probablemente hasta junio/julio) al comparar contra años completos.
 - **2.8.** Redactar conclusión parcial.
+**Nota metodológica (agregada al cierre de la fase):** los pasos 2.2 y
+2.4-2.6 se calcularon originalmente con base **anual** (12 meses), lo
+cual no era comparable de forma justa contra 2026 (año parcial, 6
+meses). Se agregaron los pasos 2.3 y 2.7 recalculando con base
+**semestral**, permitiendo comparar los 6 años en igualdad de
+condiciones. Hallazgo real: la tendencia decreciente del coeficiente de
+variación 2021-2025 (años completos) es real y se sostiene, pero el
+**segundo semestre de cada año tiene una dinámica propia**, distinta a
+la del primero — no es una simple continuación lineal. El índice de
+estacionalidad, con base corregida, mostró que 2026 se mueve dentro del
+rango histórico en la mayoría de los meses, con dos excepciones reales:
+marzo por encima de todo el rango 2021-2025, y junio por debajo —
+confirmado que no es un problema de datos incompletos (mismo conteo de
+filas/rubros que el resto de la serie).
+
+**Fase 2 — COMPLETA.**
 
 ---
 
@@ -140,6 +189,11 @@
   del 4.4: si el peso se apreció en términos reales 2022-2024, eso solo puede
   explicar buena parte de la caída del precio implícito en USD, más allá de
   si el precio internacional de la soja cayó o no.
+  **Actualizado:** el archivo ya fue descargado (ver `docs/fuentes.md` y
+  `docs/inventario_datasets.md`) — cobertura real verificada 1997 a
+  julio 2026, más amplia que lo indicado en el catálogo web del BCRA.
+  Falta el script de exploración de estructura (`src/explorar_itcrm.py`,
+  pendiente) antes de poder cruzarlo con la serie de Chaco.
 - **4.6.** Agrupar por `Rubro` (PP/MOA/MOI/CyE) y ver si cambió la composición
   de lo que exporta Chaco entre 2022 y 2026.
 - **4.7.** Recién después del 4.6, incorporar el contexto externo del complejo
