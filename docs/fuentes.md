@@ -33,7 +33,9 @@
 - **Objetivo:** #4 (causas del descenso/recuperación), punto 4.5.
 - **Nota técnica:** viene en frecuencia diaria — promediar a mensual
   (`resample('MS').mean()`) antes de unir con la serie de Chaco.
-- **Estado:** pendiente de descargar.
+- **Estado:** ✅ descargado (28/07/2026 → confirmar fecha exacta de tu
+  descarga). Cobertura real verificada: enero 1997 a julio 2026, diaria
+  — ver detalle completo en `docs/inventario_datasets.md`.
 
 ## 6. Datos propios (papá / logística)
 - **Buscar:** camiones despachados por mes (2023-2026), meses con/sin actividad.

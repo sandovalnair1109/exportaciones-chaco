@@ -46,6 +46,28 @@ sirve en el proyecto. Se actualiza a mano cada vez que se agrega un archivo nuev
   soja cayó, eso explicaría parte de la caída de Chaco en USD aunque el volumen
   físico se mantenga). NO tiene a Chaco desglosado.
 
+## ITCRM_serie_historica.xlsx
+
+- **Origen:** BCRA, página oficial de Índices de Tipo de Cambio
+  Multilateral (`https://www.bcra.gob.ar/archivos/Pdfs/PublicacionesEstadisticas/ITCRMSerie.xlsx`),
+  descargado con `src/descarga.py`.
+- **Cobertura real:** enero 1997 a julio 2026, **diaria** (10.804 filas
+  válidas) — verificada directamente sobre el archivo. No coincide con
+  la cobertura publicada en la página de catálogo del BCRA (que indicaba
+  hasta diciembre 2025); se prioriza el dato verificado sobre el archivo
+  real.
+- **Estructura:** 3 hojas (`ITCRM y bilaterales`, `ITCRM y bilaterales
+  prom. mens.`, `Ponderadores`). La hoja relevante para el proyecto es
+  la primera, con encabezado en la **fila 1** (no fila 0), columna
+  principal `'ITCRM '` (con espacio al final — cuidado al referenciarla
+  por nombre).
+- **Para qué sirve:** Fase 4.5 — aislar el efecto del tipo de cambio
+  real sobre el precio implícito de Chaco. Serie diaria, requiere
+  `resample('MS').mean()` para promediar a mensual antes de cruzar con
+  la serie de exportaciones.
+- **Pendiente:** script de verificación de estructura
+  (`src/explorar_itcrm.py`), a escribir al arrancar la Fase 4.
+  
 ## exponm26.csv / expopm26.csv / etotnm26.csv / etotpm26.csv (y sus versiones anuales _a_)
 
 - **Origen:** Sistema de Consulta de Comercio Exterior, bases generales.
