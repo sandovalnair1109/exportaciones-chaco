@@ -62,27 +62,42 @@ sirve en el proyecto. Se actualiza a mano cada vez que se agrega un archivo nuev
 
 - **Origen:** resultado de aplicar `filtrar_provincia.py` sobre `Serie_Opex_Mensual_2002_2026.xlsx`.
 - **Cobertura:** 2002 a junio 2026, mensual, solo Chaco. 884 filas, sin nulos, sin duplicados.
-- **Columnas:** Año, Mes, FOB_dólar, Peso neto, Nombre Prov, Nombre_Región, Rubro.
+- **Columnas:** Año, Mes, FOB_dólar, Peso neto, Nombre Prov, Nombre_Región, Rubro, **fecha** (agregada en Fase 1.3).
 - **Validado:**
-  - Estructura y completitud: `src/validar_dataset_procesado.py` (notebook `paso5_validacion_dataset_procesado.ipynb`).
+  - Estructura y completitud: `src/validar_dataset_procesado.py` (notebook `validacion_dataset_procesado.ipynb`).
   - Coincidencia exacta con la serie oficial de primer semestre de INDEC
     (hoja `Region-país 2015-2025 semestre` del anexo OPEX), para los 5 años
     donde ambas series se solapan (2021-2025) — validación cruzada, no solo
     interna.
+  - Total 2025 agrupado desde esta serie (Fase 1.9) vs. oficial: diferencia
+    de -0,000% (celda de comparación en `notebooks/fase1_serie_mensual_chaco.ipynb`, Fase 1.10).
+- **⚠️ Columna `fecha` (Fase 1.3):** agregada con `src/fase1_agregar_columna_fecha.py`
+  a partir de `Año`+`Mes` (`YYYY-MM-01`, tipo `datetime`, persistida en formato
+  string al guardar el CSV). A diferencia del resto de los pasos de la Fase 0,
+  **este script sobreescribe el archivo en el mismo lugar** (no genera un CSV
+  nuevo) — decisión consciente para no tener dos versiones del dataset
+  circulando, pero implica que este archivo ya no es exactamente el mismo
+  que el validado en la Fase 0.9.bis (tiene una columna más). Es idempotente:
+  correrlo de nuevo no duplica ni corrompe nada, solo recalcula `fecha` igual.
 - **A partir de este archivo se construye todo el análisis de las Fases 1 a 4.**
   No se vuelve a tocar `Serie_Opex_Mensual_2002_2026.xlsx` directamente salvo
   para volver a filtrar si hiciera falta otra provincia de comparación.
 
-## Nota sobre data_quality.py y su wrapper
+## Nota sobre data_quality.py y sus wrappers
 
 `data_quality.py` es una **librería genérica** de funciones de chequeo
 (nulos, duplicados, huecos temporales) — no está pensada para correrse sola
 con `%run` desde un notebook (espera un argumento de línea de comandos).
-Para Chaco específicamente, se usa a través de dos wrappers que sí siguen el
+Para Chaco específicamente, se usa a través de wrappers que sí siguen el
 patrón del proyecto (ruta hardcodeada, `%run` sin argumentos):
 
-- `src/chequeo_calidad_chaco.py` (Fase 1.2) — nulos, duplicados por clave
+- `src/fase1_chequeo_calidad_chaco.py` (Fase 1.2) — nulos, duplicados por clave
   `Año/Mes/Rubro`, y huecos temporales (arma una columna de fecha temporal
-  en memoria, ya que el CSV trae `Año`/`Mes` separados).
+  en memoria, previo a que exista la persistida de la Fase 1.3).
+- `src/fase1_agregar_columna_fecha.py` (Fase 1.3) — agrega y persiste la
+  columna `fecha` en el CSV (ver nota arriba).
 - `src/validar_dataset_procesado.py` (Fase 0.9.bis) — validación estructural
-  del archivo procesado (filas esperadas, columnas, provincia única).
+  del archivo procesado (filas esperadas, columnas, provincia única). Corrido
+  **antes** de que existiera la columna `fecha`; si se re-corre ahora, va a
+  reportar una columna "extra" no esperada — no es un error, es un cambio de
+  estado legítimo del archivo entre fases.
