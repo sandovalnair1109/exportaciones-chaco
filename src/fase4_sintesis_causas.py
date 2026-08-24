@@ -91,8 +91,12 @@ tablero = [
      "Casi no se movió 2022-2024 (+0,2%); correlación débil y de signo contrario (-0,64) en toda la serie", "DESCARTADO"),
     ("Composición por Rubro (PP vs. MOA)", "4.6",
      "PP perdió 24 pp de participación (89,4%→65,4%); MOA ganó 23,1 pp", "CONFIRMADO — explica el patrón del volumen"),
-    ("Retenciones (efecto en volumen mensual agregado)", "4.8",
-     "Sin señal clara a nivel mensual/total ni mensual/PP", "NO CONCLUYENTE (posible efecto de timing, no de volumen anual)"),
+    ("Retenciones (efecto sobre la CAÍDA 2022-2024)", "4.8",
+     "Cronología disponible arranca en ene-2025 (decreto 38/2025) — posterior al 100% de la caída "
+     "de PP (461,7M→140,8M ya consumado para fines de 2024)", "NO APLICA — desfasaje temporal, no pudo haber sido causa"),
+    ("Retenciones (efecto sobre la RECUPERACIÓN 2025-2026)", "4.8",
+     "Único tramo donde hay decretos vigentes; sin señal clara en volumen mensual agregado (total ni PP)",
+     "NO CONCLUYENTE — evidencia indirecta de efecto en timing, no en volumen"),
 ]
 
 for factor, fase, evidencia, veredicto in tablero:
@@ -108,7 +112,10 @@ print("no por precio — y ese volumen no cayó/subió parejo: se concentró en 
 print("Primarios, mientras Manufacturas de origen agropecuario creció en el mismo")
 print("período. Ni el precio internacional de referencia (soja) ni el tipo de cambio")
 print("real (ITCRM) acompañan el movimiento cuando más se los necesita (2022-2024).")
-print("Las retenciones no muestran un efecto claro sobre el volumen agregado mensual,")
-print("aunque hay evidencia indirecta de que sí afectan el momento de venta dentro")
-print("del año (Fase 4.8, cupo de DJVE agotado en 3 días en sep-2025).")
+print("Las retenciones NO pudieron ser causa de la caída 2022-2024: la cronología")
+print("disponible arranca en enero de 2025, cuando el 100% de esa caída ya había")
+print("ocurrido. Contra la recuperación 2025-2026 —el único tramo donde sí aplican—")
+print("no muestran un efecto claro sobre el volumen agregado mensual, aunque hay")
+print("evidencia indirecta de que afectan el momento de venta dentro del año")
+print("(cupo de DJVE agotado en 3 días en sep-2025).")
 print("=" * 92)
