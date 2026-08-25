@@ -123,3 +123,21 @@ patrón del proyecto (ruta hardcodeada, `%run` sin argumentos):
   **antes** de que existiera la columna `fecha`; si se re-corre ahora, va a
   reportar una columna "extra" no esperada — no es un error, es un cambio de
   estado legítimo del archivo entre fases.
+  
+## data/raw/retenciones_chaco.csv
+
+- **Origen:** generado por `src/fase4_generar_retenciones_csv.py` (Fase 4.8.a)
+  a partir de la transcripción manual en `docs/cronologia_retenciones.md`
+  (6 decretos, verificados contra InfoLeg/BORA donde se indica).
+- **Cobertura:** 27 de enero de 2025 en adelante (decreto 38/2025) — **no
+  cubre el período 2022-2024** de la caída de exportaciones. Por este
+  motivo, en la Fase 4.9/4.10 las retenciones se evaluaron únicamente
+  contra la recuperación 2025-2026, no contra la caída (desfasaje
+  temporal, no ausencia de señal).
+- **Estructura:** una fila por ventana temporal + producto (soja, trigo,
+  maíz/sorgo, algodón), con nivel de confianza (alta/media/baja) según si
+  el valor de la alícuota está confirmado en texto oficial o solo por prensa.
+- **Para qué sirve:** cruzar con la serie mensual de Chaco en la Fase 4.8
+  (verificación de señal) — resultado: sin efecto claro en volumen mensual
+  agregado, con evidencia indirecta de efecto en el momento de venta
+  (cupo DJVE agotado en 3 días, sep-2025).
