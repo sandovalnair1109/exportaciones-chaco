@@ -15,6 +15,7 @@ gráfico o conclusión, con su nivel geográfico y período exacto.
 | Chaco concentra ~45% del área algodonera nacional, pero ya no es la mayor provincia productora (ese lugar es de Santiago del Estero) | Chaco (comparativo con otras provincias) | Sin fecha exacta en la fuente — verificar año de referencia antes de citar en el informe final | noticiasagropecuarias.com, nov. 2025 | 2026-07-26 | #4 (contexto) |
 | Embarques Gran Rosario: 4,9 millones de toneladas en diciembre 2025 (3er registro más alto de la historia) | Gran Rosario (no Chaco) | Diciembre 2025 | Bolsa de Comercio de Rosario (BCR) | 2026-07-26 | #3 (contexto logístico, no dato de Chaco) |
 | Exportaciones de soja julio 2025 fueron 4x julio 2024; camiones de trigo al Gran Rosario, máximo desde 2020 (sistema STOP) | Gran Rosario / Nacional | Julio 2025 | BCR | 2026-07-26 | #3 (contexto logístico) |
+| Caída de PP (461,7M→140,8M USD) ya consumada en un 100% para fin de 2024, antes del primer decreto de retenciones de la cronología (27-ene-2025) | Chaco (PP) | 2022-2024 vs. cronología de retenciones desde ene-2025 | Calculado desde `chaco_serie_mensual_2002_2026.csv` + `retenciones_chaco.csv` (`src/fase4_sintesis_causas.py`) | — | #4 (delimita el alcance de la Fase 4.8: retenciones no evaluables como causa de la caída, solo de la recuperación) |
 
 ## Cómo agregar una fila nueva
 
